@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "162307845696",
+    "firebase_url": "https://millennials-app.firebaseio.com",
+    "project_id": "millennials-app",
+    "storage_bucket": "millennials-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162307845696:android:ba5aedb23204bf96f2f9a5",
+        "android_client_info": {
+          "package_name": "com.shayannasir.millennials_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "162307845696-dsso2cr0a3crhod0819plvqjebmdbevj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shayannasir.millennials_app",
+            "certificate_hash": "a9c1e7a266dfdc0fac534fadddcd9af56e6563f3"
+          }
+        },
+        {
+          "client_id": "162307845696-fi6qj71av6oj41gb6lv92081gl8tnqlg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG6Icf2EgCarZerQS41AI6ecwb3eEHAuc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162307845696-fi6qj71av6oj41gb6lv92081gl8tnqlg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
