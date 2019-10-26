@@ -1,1 +1,1 @@
-# millenials-app
+# millennials-app
