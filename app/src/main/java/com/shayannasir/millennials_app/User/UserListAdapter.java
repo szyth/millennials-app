@@ -1,14 +1,17 @@
-package com.shayannasir.millennials_app;
+package com.shayannasir.millennials_app.User;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+import com.shayannasir.millennials_app.R;
 
 import java.util.ArrayList;
 
@@ -32,9 +35,20 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UserListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull UserListViewHolder holder, final int position) {
         holder.mName.setText(userList.get(position).getName());
         holder.mPhone.setText(userList.get(position).getPhone());
+
+        holder.mLayout.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                String key = FirebaseDatabase.getInstance().getReference().child("chat").push().getKey();
+
+                FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("chat").child(key).setValue(true);
+                FirebaseDatabase.getInstance().getReference().child("user").child(userList.get(position).getUid()).child("chat").child(key).setValue(true);
+            }
+        });
     }
 
     @Override
@@ -45,10 +59,12 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
 
     public class UserListViewHolder extends RecyclerView.ViewHolder {
         public TextView mName, mPhone;
+        public LinearLayout mLayout;
         public UserListViewHolder(View view){
             super(view);
             mName = view.findViewById(R.id.name);
             mPhone = view.findViewById(R.id.phone);
+            mLayout = view.findViewById(R.id.layout);
         }
     }
 }
