@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -83,13 +84,16 @@ public class ChatActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()){
                     String text = "",
                             creatorID = "";
-
+                    ArrayList<String> mediaUrlList = new ArrayList<>();
                     if(dataSnapshot.child("text").getValue() != null)
                         text = dataSnapshot.child("text").getValue().toString();
                     if(dataSnapshot.child("creator").getValue() != null)
                         creatorID = dataSnapshot.child("creator").getValue().toString();
+                    if(dataSnapshot.child("media").getChildrenCount() > 0)
+                        for(DataSnapshot mediaSnapshot : dataSnapshot.child("media").getChildren())
+                            mediaUrlList.add(mediaSnapshot.getValue().toString());
 
-                    MessageObject mMessage = new MessageObject(dataSnapshot.getKey(), creatorID, text);
+                    MessageObject mMessage = new MessageObject(dataSnapshot.getKey(), creatorID, text, mediaUrlList);
                     messageList.add(mMessage);
                     mChatLayoutManager.scrollToPosition(messageList.size()-1);
                     mChatAdapter.notifyDataSetChanged();
