@@ -28,6 +28,8 @@ import com.shayannasir.millennials_app.Chat.ChatObject;
 import com.shayannasir.millennials_app.Chat.MediaAdapter;
 import com.shayannasir.millennials_app.Chat.MessageAdapter;
 import com.shayannasir.millennials_app.Chat.MessageObject;
+import com.shayannasir.millennials_app.User.UserObject;
+import com.shayannasir.millennials_app.Utils.SendNotification;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,17 +43,17 @@ public class ChatActivity extends AppCompatActivity {
 
     ArrayList<MessageObject> messageList;
 
-    String chatID;
-    DatabaseReference mChatDB;
+    ChatObject mChatObject;
+    DatabaseReference mChatMessagesDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        chatID = getIntent().getExtras().getString("chatID");
+        mChatObject = (ChatObject) getIntent().getSerializableExtra("chatObject");
 
-        mChatDB = FirebaseDatabase.getInstance().getReference().child("chat").child(chatID);
+        mChatMessagesDB = FirebaseDatabase.getInstance().getReference().child("chat").child(mChatObject.getChatId()).child("messages");
 
 
         Button mSend = findViewById(R.id.send);
@@ -78,7 +80,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
     private void getChatMessages() {
-        mChatDB.addChildEventListener(new ChildEventListener() {
+        mChatMessagesDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.exists()){
@@ -124,8 +126,8 @@ public class ChatActivity extends AppCompatActivity {
     EditText mMessage;
     private void sendMessage(){
         mMessage = findViewById(R.id.messageInput);
-        String messageId = mChatDB.push().getKey();
-        final DatabaseReference newMessageDb = mChatDB.child(messageId);
+        String messageId = mChatMessagesDB.push().getKey();
+        final DatabaseReference newMessageDb = mChatMessagesDB.child(messageId);
 
         final Map newMessageMap = new HashMap<>();
 
@@ -139,7 +141,7 @@ public class ChatActivity extends AppCompatActivity {
             for(String mediaUri : mediaUriList){
                 String mediaId = newMessageDb.child("media").push().getKey();
                 mediaIdList.add(mediaId);
-                final StorageReference filePath = FirebaseStorage.getInstance().getReference().child("chat").child(chatID).child(messageId).child(mediaId);
+                final StorageReference filePath = FirebaseStorage.getInstance().getReference().child("chat").child(mChatObject.getChatId()).child(messageId).child(mediaId);
 
                 UploadTask uploadTask = filePath.putFile(Uri.parse(mediaUri));
 
@@ -170,7 +172,20 @@ public class ChatActivity extends AppCompatActivity {
         mMessage.setText(null);
         mediaUriList.clear();
         mediaIdList.clear();
+        totalMediaUpload=0;
         mMediaAdapter.notifyDataSetChanged();
+
+        String message;
+
+        if(newMessageMap.get("text") != null)
+            message = newMessageMap.get("text").toString();
+        else
+            message = "Sent Media";
+
+        for(UserObject mUser : mChatObject.getUserObjectArrayList()){
+            if(!mUser.getUid().equals(FirebaseAuth.getInstance().getUid()))
+                new SendNotification(message, "New Message", mUser.getNotificationKey());
+        }
 
 
     }
