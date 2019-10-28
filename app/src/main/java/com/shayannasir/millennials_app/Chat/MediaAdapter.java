@@ -31,7 +31,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.MediaViewHol
     @NonNull
     @Override
     public MediaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_media, null, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_media,null, false);
         MediaViewHolder mediaViewHolder = new MediaViewHolder(layoutView);
 
         return mediaViewHolder;
@@ -47,10 +47,12 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.MediaViewHol
         return mediaList.size();
     }
 
+
     public class MediaViewHolder extends RecyclerView.ViewHolder {
 
         ImageView mMedia;
-        public MediaViewHolder(@NonNull View itemView) {
+
+        public MediaViewHolder(View itemView) {
             super(itemView);
             mMedia = itemView.findViewById(R.id.media);
         }

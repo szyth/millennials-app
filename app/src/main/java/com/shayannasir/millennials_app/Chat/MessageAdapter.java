@@ -43,7 +43,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         holder.mSender.setText(messageList.get(position).getSenderId());
 
         if(messageList.get(holder.getAdapterPosition()).getMediaUrlList().isEmpty())
-                holder.mViewMedia.setVisibility(View.GONE);
+            holder.mViewMedia.setVisibility(View.GONE);
 
         holder.mViewMedia.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,16 +61,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     }
 
 
-    public class MessageViewHolder extends RecyclerView.ViewHolder{
-        TextView mMessage,
+
+
+
+    class MessageViewHolder extends RecyclerView.ViewHolder{
+        TextView    mMessage,
                 mSender;
         Button mViewMedia;
-        public LinearLayout mLayout;
+        LinearLayout mLayout;
         MessageViewHolder(View view){
             super(view);
             mLayout = view.findViewById(R.id.layout);
+
             mMessage = view.findViewById(R.id.message);
             mSender = view.findViewById(R.id.sender);
+
             mViewMedia = view.findViewById(R.id.viewMedia);
         }
     }

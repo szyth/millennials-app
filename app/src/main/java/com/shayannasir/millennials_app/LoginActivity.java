@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
         userIsLoggedIn();
 
-        mPhoneNumber = findViewById(R.id.phonenumber);
+        mPhoneNumber = findViewById(R.id.phoneNumber);
         mCode = findViewById(R.id.code);
 
         mSend = findViewById(R.id.send);

@@ -56,7 +56,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatLi
         return chatList.size();
     }
 
-
     public class ChatListViewHolder extends RecyclerView.ViewHolder{
         public TextView mTitle;
         public LinearLayout mLayout;

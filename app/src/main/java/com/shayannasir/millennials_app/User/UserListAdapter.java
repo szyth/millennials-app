@@ -39,7 +39,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final UserListViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final UserListViewHolder holder, final int position) {
         holder.mName.setText(userList.get(position).getName());
         holder.mPhone.setText(userList.get(position).getPhone());
 
@@ -49,8 +49,6 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
                 userList.get(holder.getAdapterPosition()).setSelected(isChecked);
             }
         });
-
-
     }
 
     @Override
@@ -59,16 +57,17 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserLi
     }
 
 
-    class UserListViewHolder extends RecyclerView.ViewHolder {
-         TextView mName, mPhone;
-         LinearLayout mLayout;
-         CheckBox mAdd;
-         UserListViewHolder(View view){
+
+    class UserListViewHolder extends RecyclerView.ViewHolder{
+        TextView mName, mPhone;
+        LinearLayout mLayout;
+        CheckBox mAdd;
+        UserListViewHolder(View view){
             super(view);
             mName = view.findViewById(R.id.name);
             mPhone = view.findViewById(R.id.phone);
-            mLayout = view.findViewById(R.id.layout);
             mAdd = view.findViewById(R.id.add);
+            mLayout = view.findViewById(R.id.layout);
         }
     }
 }

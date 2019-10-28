@@ -172,7 +172,7 @@ public class MainPageActivity extends AppCompatActivity {
         mChatList= findViewById(R.id.chatList);
         mChatList.setNestedScrollingEnabled(false);
         mChatList.setHasFixedSize(false);
-        mChatListLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayout.VERTICAL, false);
+        mChatListLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
         mChatList.setLayoutManager(mChatListLayoutManager);
         mChatListAdapter = new ChatListAdapter(chatList);
         mChatList.setAdapter(mChatListAdapter);

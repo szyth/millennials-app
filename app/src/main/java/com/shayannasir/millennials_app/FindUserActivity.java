@@ -12,6 +12,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -40,8 +41,8 @@ public class FindUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_user);
 
-        contactList = new ArrayList<>();
-        userList = new ArrayList<>();
+        contactList= new ArrayList<>();
+        userList= new ArrayList<>();
 
         Button mCreate = findViewById(R.id.create);
         mCreate.setOnClickListener(new View.OnClickListener() {
@@ -53,7 +54,6 @@ public class FindUserActivity extends AppCompatActivity {
 
         initializeRecyclerView();
         getContactList();
-
     }
 
     private void createChat(){
@@ -74,6 +74,7 @@ public class FindUserActivity extends AppCompatActivity {
                 userDb.child(mUser.getUid()).child("chat").child(key).setValue(true);
             }
         }
+
         if(validChat){
             chatInfoDb.updateChildren(newChatMap);
             userDb.child(FirebaseAuth.getInstance().getUid()).child("chat").child(key).setValue(true);
@@ -99,13 +100,12 @@ public class FindUserActivity extends AppCompatActivity {
                 phone = ISOPrefix + phone;
 
             UserObject mContact = new UserObject("", name, phone);
-            Log.i("getcontactlist", name+phone);//for testing
             contactList.add(mContact);
             getUserDetails(mContact);
         }
     }
 
-    private void getUserDetails(final UserObject mContact) {
+    private void getUserDetails(UserObject mContact) {
         DatabaseReference mUserDB = FirebaseDatabase.getInstance().getReference().child("user");
         Query query = mUserDB.orderByChild("phone").equalTo(mContact.getPhone());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -122,8 +122,8 @@ public class FindUserActivity extends AppCompatActivity {
 
 
                         UserObject mUser = new UserObject(childSnapshot.getKey(), name, phone);
-                        if(name.equals(phone))
-                            for(UserObject mContactIterator: contactList){
+                        if (name.equals(phone))
+                            for(UserObject mContactIterator : contactList){
                                 if(mContactIterator.getPhone().equals(mUser.getPhone())){
                                     mUser.setName(mContactIterator.getName());
                                 }
@@ -132,7 +132,6 @@ public class FindUserActivity extends AppCompatActivity {
                         userList.add(mUser);
                         mUserListAdapter.notifyDataSetChanged();
                         return;
-
                     }
                 }
             }
@@ -143,6 +142,8 @@ public class FindUserActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private String getCountryISO(){
         String iso = null;
@@ -156,7 +157,7 @@ public class FindUserActivity extends AppCompatActivity {
     }
 
     private void initializeRecyclerView() {
-        mUserList  = findViewById(R.id.userList);
+        mUserList= findViewById(R.id.userList);
         mUserList.setNestedScrollingEnabled(false);
         mUserList.setHasFixedSize(false);
         mUserListLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);

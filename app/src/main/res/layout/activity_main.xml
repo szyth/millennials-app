@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="Enter Phone Number"
-        android:id="@+id/phonenumber"/>
+        android:id="@+id/phoneNumber"/>
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -13,6 +13,7 @@ import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,7 +45,8 @@ public class ChatActivity extends AppCompatActivity {
     ArrayList<MessageObject> messageList;
 
     ChatObject mChatObject;
-    DatabaseReference mChatMessagesDB;
+
+    DatabaseReference mChatMessagesDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +55,7 @@ public class ChatActivity extends AppCompatActivity {
 
         mChatObject = (ChatObject) getIntent().getSerializableExtra("chatObject");
 
-        mChatMessagesDB = FirebaseDatabase.getInstance().getReference().child("chat").child(mChatObject.getChatId()).child("messages");
-
+        mChatMessagesDb = FirebaseDatabase.getInstance().getReference().child("chat").child(mChatObject.getChatId()).child("messages");
 
         Button mSend = findViewById(R.id.send);
         Button mAddMedia = findViewById(R.id.addMedia);
@@ -77,22 +78,22 @@ public class ChatActivity extends AppCompatActivity {
         getChatMessages();
     }
 
-
-
     private void getChatMessages() {
-        mChatMessagesDB.addChildEventListener(new ChildEventListener() {
+        mChatMessagesDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.exists()){
-                    String text = "",
+                    String  text = "",
                             creatorID = "";
                     ArrayList<String> mediaUrlList = new ArrayList<>();
+
                     if(dataSnapshot.child("text").getValue() != null)
                         text = dataSnapshot.child("text").getValue().toString();
                     if(dataSnapshot.child("creator").getValue() != null)
                         creatorID = dataSnapshot.child("creator").getValue().toString();
+
                     if(dataSnapshot.child("media").getChildrenCount() > 0)
-                        for(DataSnapshot mediaSnapshot : dataSnapshot.child("media").getChildren())
+                        for (DataSnapshot mediaSnapshot : dataSnapshot.child("media").getChildren())
                             mediaUrlList.add(mediaSnapshot.getValue().toString());
 
                     MessageObject mMessage = new MessageObject(dataSnapshot.getKey(), creatorID, text, mediaUrlList);
@@ -119,15 +120,17 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
-    int totalMediaUpload = 0;
+    int totalMediaUploaded = 0;
     ArrayList<String> mediaIdList = new ArrayList<>();
     EditText mMessage;
     private void sendMessage(){
         mMessage = findViewById(R.id.messageInput);
-        String messageId = mChatMessagesDB.push().getKey();
-        final DatabaseReference newMessageDb = mChatMessagesDB.child(messageId);
+
+        String messageId = mChatMessagesDb.push().getKey();
+        final DatabaseReference newMessageDb = mChatMessagesDb.child(messageId);
 
         final Map newMessageMap = new HashMap<>();
 
@@ -138,7 +141,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
         if(!mediaUriList.isEmpty()){
-            for(String mediaUri : mediaUriList){
+            for (String mediaUri : mediaUriList){
                 String mediaId = newMessageDb.child("media").push().getKey();
                 mediaIdList.add(mediaId);
                 final StorageReference filePath = FirebaseStorage.getInstance().getReference().child("chat").child(mChatObject.getChatId()).child(messageId).child(mediaId);
@@ -151,28 +154,32 @@ public class ChatActivity extends AppCompatActivity {
                         filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                newMessageMap.put("/media/" + mediaIdList.get(totalMediaUpload) + "/", uri.toString());
+                                newMessageMap.put("/media/" + mediaIdList.get(totalMediaUploaded) + "/", uri.toString());
 
-                                totalMediaUpload++;
-                                if(totalMediaUpload == mediaUriList.size())
+                                totalMediaUploaded++;
+                                if(totalMediaUploaded == mediaUriList.size())
                                     updateDatabaseWithNewMessage(newMessageDb, newMessageMap);
+
                             }
                         });
                     }
                 });
             }
-        } else {
+        }else{
             if(!mMessage.getText().toString().isEmpty())
                 updateDatabaseWithNewMessage(newMessageDb, newMessageMap);
         }
+
+
     }
+
 
     private void updateDatabaseWithNewMessage(DatabaseReference newMessageDb, Map newMessageMap){
         newMessageDb.updateChildren(newMessageMap);
         mMessage.setText(null);
         mediaUriList.clear();
         mediaIdList.clear();
-        totalMediaUpload=0;
+        totalMediaUploaded=0;
         mMediaAdapter.notifyDataSetChanged();
 
         String message;
@@ -183,17 +190,15 @@ public class ChatActivity extends AppCompatActivity {
             message = "Sent Media";
 
         for(UserObject mUser : mChatObject.getUserObjectArrayList()){
-            if(!mUser.getUid().equals(FirebaseAuth.getInstance().getUid()))
+            if(!mUser.getUid().equals(FirebaseAuth.getInstance().getUid())){
                 new SendNotification(message, "New Message", mUser.getNotificationKey());
+            }
         }
-
-
     }
-
 
     private void initializeMessage() {
         messageList = new ArrayList<>();
-        mChat = findViewById(R.id.messageList);
+        mChat= findViewById(R.id.messageList);
         mChat.setNestedScrollingEnabled(false);
         mChat.setHasFixedSize(false);
         mChatLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
@@ -203,43 +208,42 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
+
     int PICK_IMAGE_INTENT = 1;
     ArrayList<String> mediaUriList = new ArrayList<>();
 
     private void initializeMedia() {
-       mediaUriList = new ArrayList<>();
-       mMedia = findViewById(R.id.mediaList);
-       mMedia.setNestedScrollingEnabled(false);
-       mMedia.setHasFixedSize(false);
-       mMediaLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.HORIZONTAL, false);
-       mMedia.setLayoutManager(mMediaLayoutManager);
-       mMediaAdapter = new MediaAdapter(getApplicationContext(), mediaUriList);
-       mMedia.setAdapter(mMediaAdapter);
+        mediaUriList = new ArrayList<>();
+        mMedia= findViewById(R.id.mediaList);
+        mMedia.setNestedScrollingEnabled(false);
+        mMedia.setHasFixedSize(false);
+        mMediaLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.HORIZONTAL, false);
+        mMedia.setLayoutManager(mMediaLayoutManager);
+        mMediaAdapter = new MediaAdapter(getApplicationContext(), mediaUriList);
+        mMedia.setAdapter(mMediaAdapter);
     }
-
 
     private void openGallery() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setAction(intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent.createChooser(intent, "Select Picture(s)"), PICK_IMAGE_INTENT);
-
-
+        startActivityForResult(Intent.createChooser(intent, "Select Picture(s)"), PICK_IMAGE_INTENT);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
             if(requestCode == PICK_IMAGE_INTENT){
                 if(data.getClipData() == null){
                     mediaUriList.add(data.getData().toString());
-                } else {
-                    for(int i=0; i<data.getClipData().getItemCount(); i++){
+                }else{
+                    for(int i = 0; i < data.getClipData().getItemCount(); i++){
                         mediaUriList.add(data.getClipData().getItemAt(i).getUri().toString());
                     }
                 }
+
                 mMediaAdapter.notifyDataSetChanged();
             }
         }
